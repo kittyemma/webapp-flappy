@@ -85,6 +85,7 @@ function update() {game.physics.arcade
 
 function gameOver(){
     game.destroy();
+    
 
 }
 function changeScore() {
