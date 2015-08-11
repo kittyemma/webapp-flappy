@@ -11,12 +11,24 @@ var game = new Phaser.Game(790, 400, Phaser.AUTO, 'game', stateActions);
 
 /*
  * Loads all resources for the game and gives them names.
- *
+ jQuery("#greeting-form").on("submit", function(event_details) {
+ alert("Submitted");
+ });
  */
+
+
 var score = 0;
 var player;
 var labelScore;
 var pipes = [];
+
+jQuery("#greeting-form").on("submit", function(event_details) {
+    alert("Submitted");
+    event_details.preventDefault();
+});
+
+
+
 function preload() {
     game.load.image("playerImg", "../assets/flappy_superman.png");
     game.load.audio("score", "../assets/point.ogg");
@@ -30,10 +42,9 @@ function spaceHandler() {
  */
 function create() {
     game.stage.setBackgroundColor("#CEDAE6");
-    var t=game.add.text(150, 160, "Goodluck! Flap Away", {font: "50px Verdana", fill: "#00008A"});
+    var t=game.add.text(150, 160, "Goodluck!", {font: "50px Verdana", fill: "#00008A"});
     // set the background colour of the scene
-    game.add.sprite(10, 350, "playerImg");
-    game.add.sprite(10, 20, "playerImg");
+   game.add.sprite(10, 350, "playerImg");
     game.add.sprite(750, 350, "playerImg");
     game.add.sprite(750, 20, "playerImg");
     game.input
@@ -62,14 +73,12 @@ function create() {
     game.input.keyboard
         .addKey(Phaser.Keyboard.SPACEBAR)
         .onDown.add(playerJump);
-    pipeInterval = 1.5;
+    var pipeInterval = 1.1;
     game.time.events
         .loop(pipeInterval * Phaser.Timer.SECOND,
     generatePipe);
 }
-function clickHandler(event) {
-    alert("click!");
-}
+
 function clickHandler(event) {
     alert("The position is: " + event.x + "," + event.y);
     game.add.sprite(event.x, event.y, "playerImg");
@@ -84,9 +93,7 @@ function update() {game.physics.arcade
 }
 
 function gameOver(){
-    game.destroy();
-    
-
+   location.reload();
 }
 function changeScore() {
     score = score + 1;
@@ -118,6 +125,8 @@ function generatePipe() {
                 addPipeBlock(750, count*50);
             }
         }
+    changeScore();
+
     //}
 }
 function addPipeBlock(x, y) {
@@ -132,9 +141,9 @@ function playerJump() {
 
 }
 
-function gameOver() {
-    location.reload();     1
-}
+/*function gameOver() {
+    location.reload();
+}*/
 
 
 
