@@ -64,10 +64,13 @@ function create() {
     game.time.events
         .loop(pipeInterval * Phaser.Timer.SECOND,
     generatePipe);
+
+    game.paused = true;
+    game.input.keyboard.addKey(Phaser.Keyboard.ENTER)
+    game.start = true;
+
 }
-function clickHandler(event) {
-    alert("click!");
-}
+
 function clickHandler(event) {
     alert("The position is: " + event.x + "," + event.y);
     game.add.sprite(event.x, event.y, "playerImg");
@@ -83,9 +86,7 @@ function update() {
     gameOver);
 }
 
-function gameOver() {
-    game.destroy();
-}
+
 function diesuperman () {
     if (player.y > 400 || player.y < 0){gameOver();}
 
@@ -138,11 +139,10 @@ function playerJump() {
 }
 
 function gameOver() {
-    location.reload();
+    ///game.destroy();
+    score=0;
+    game.state.restart();
 }
-
-
-
 
 
 
