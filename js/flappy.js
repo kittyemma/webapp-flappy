@@ -19,7 +19,6 @@ var labelScore;
 var pipes = [];
 function preload() {
     game.load.image("playerImg", "../assets/flappy_superman.png");
-    game.load.audio("score", "../assets/point.ogg");
     game.load.image("pipe","../assets/pipe_pink.png");
 }
 function spaceHandler() {
