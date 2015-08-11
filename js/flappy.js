@@ -30,12 +30,11 @@ function spaceHandler() {
  */
 function create() {
     game.stage.setBackgroundColor("#CEDAE6");
-    var t=game.add.text(150, 160, "Goodluck! Flap Away", {font: "50px Verdana", fill: "#00008A"});
+    var t=game.add.text(250, 150, "Good Luck!", {font: "50px Verdana", fill: "#00008A"});
     // set the background colour of the scene
     game.add.sprite(10, 350, "playerImg");
-    game.add.sprite(10, 20, "playerImg");
-    game.add.sprite(750, 350, "playerImg");
-    game.add.sprite(750, 20, "playerImg");
+    game.add.sprite(730, 350, "playerImg");
+    game.add.sprite(730, 10, "playerImg");
     game.input
         .onDown
         .add(clickHandler);
@@ -62,7 +61,7 @@ function create() {
     game.input.keyboard
         .addKey(Phaser.Keyboard.SPACEBAR)
         .onDown.add(playerJump);
-    pipeInterval = 1.5;
+    var pipeInterval = 1;
     game.time.events
         .loop(pipeInterval * Phaser.Timer.SECOND,
     generatePipe);
@@ -77,15 +76,19 @@ function clickHandler(event) {
 /*
  * This function updates the scene. It is called for every new frame.
  */
-function update() {game.physics.arcade
+function update() {
+    diesuperman();
+    game.physics.arcade
     .overlap(player,
     pipes,
     gameOver);
 }
 
-function gameOver(){
+function gameOver() {
     game.destroy();
-    
+}
+function diesuperman () {
+    if (player.y > 400 || player.y < 0){gameOver();}
 
 }
 function changeScore() {
@@ -118,6 +121,9 @@ function generatePipe() {
                 addPipeBlock(750, count*50);
             }
         }
+
+    changeScore();
+
     //}
 }
 function addPipeBlock(x, y) {
@@ -133,7 +139,7 @@ function playerJump() {
 }
 
 function gameOver() {
-    location.reload();     1
+    location.reload();
 }
 
 
