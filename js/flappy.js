@@ -9,6 +9,7 @@ var stateActions = { preload: preload, create: create, update: update };
 // - actions on the game state (or null for nothing)
 var game = new Phaser.Game(790, 400, Phaser.AUTO, 'game', stateActions);
 
+
 /*
  * Loads all resources for the game and gives them names.
  *
@@ -17,6 +18,15 @@ var score = 0;
 var player;
 var labelScore;
 var pipes = [];
+var waitingForEnter = false;
+
+jQuery("#greeting-form").on("submit", function(event_details) {
+    var greeting = "Hello ";
+    var name = jQuery("#fullName").val();
+    var greeting_message = greeting + name;
+    alert(greeting_message);
+    event_details.preventDefault();
+});
 function preload() {
     game.load.image("playerImg", "../assets/flappy_superman.png");
     game.load.image("pipe","../assets/pipe_pink.png");
@@ -37,6 +47,7 @@ function create() {
     game.input
         .onDown
         .add(clickHandler);
+
     game.input
         .keyboard.addKey(Phaser.Keyboard.SPACEBAR)
         .onDown.add(spaceHandler);
@@ -64,13 +75,14 @@ function create() {
     game.time.events
         .loop(pipeInterval * Phaser.Timer.SECOND,
     generatePipe);
+    game.pause = true;
+
 }
+//function clickHandler(event) {
+//    alert("click!");
+//}
 function clickHandler(event) {
-    alert("click!");
-}
-function clickHandler(event) {
-    alert("The position is: " + event.x + "," + event.y);
-    game.add.sprite(event.x, event.y, "playerImg");
+    alert("Game Paused");
 }
 /*
  * This function updates the scene. It is called for every new frame.
@@ -81,6 +93,7 @@ function update() {
     .overlap(player,
     pipes,
     gameOver);
+
 }
 
 function gameOver() {
@@ -139,15 +152,20 @@ function playerJump() {
 
 function gameOver() {
     location.reload();
+    $("#greeting") . show();
 }
+function appear()
+{
+    document.getElementById("firstt").style.visibility="visible";
+    waitingForEnter = true;
+}
+function keydownHandler(e) {
 
-
-
-
-
-
-
-
+    if (e.keyCode == 13 && waitingForEnter) {  // 13 is the enter key
+        document.getElementById("startrouter").style.visibility="visible";
+        waitingForEnter = false; // reset variable
+    }
+}
 
 
 

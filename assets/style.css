@@ -22,3 +22,17 @@ font-family: Montserrat;
     text-align:center;
     font-size: 30px
 }
+
+#greeting {
+    position: absolute;
+    left: 40%;
+    top: 40%;
+    background: #fff;
+    width: 350px;
+    height: 300px;
+    border: 2px solid gray;
+    border-radius: 5px;
+    padding: 20px;
+    display: none;
+
+}
