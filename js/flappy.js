@@ -11,27 +11,14 @@ var game = new Phaser.Game(790, 400, Phaser.AUTO, 'game', stateActions);
 
 /*
  * Loads all resources for the game and gives them names.
- jQuery("#greeting-form").on("submit", function(event_details) {
- alert("Submitted");
- });
+ *
  */
-
-
 var score = 0;
 var player;
 var labelScore;
 var pipes = [];
-
-jQuery("#greeting-form").on("submit", function(event_details) {
-    alert("Submitted");
-    event_details.preventDefault();
-});
-
-
-
 function preload() {
     game.load.image("playerImg", "../assets/flappy_superman.png");
-    game.load.audio("score", "../assets/point.ogg");
     game.load.image("pipe","../assets/pipe_pink.png");
 }
 function spaceHandler() {
@@ -42,11 +29,11 @@ function spaceHandler() {
  */
 function create() {
     game.stage.setBackgroundColor("#CEDAE6");
-    var t=game.add.text(150, 160, "Goodluck!", {font: "50px Verdana", fill: "#00008A"});
+    var t=game.add.text(250, 150, "Good Luck!", {font: "50px Verdana", fill: "#00008A"});
     // set the background colour of the scene
-   game.add.sprite(10, 350, "playerImg");
-    game.add.sprite(750, 350, "playerImg");
-    game.add.sprite(750, 20, "playerImg");
+    game.add.sprite(10, 350, "playerImg");
+    game.add.sprite(730, 350, "playerImg");
+    game.add.sprite(730, 10, "playerImg");
     game.input
         .onDown
         .add(clickHandler);
@@ -73,12 +60,14 @@ function create() {
     game.input.keyboard
         .addKey(Phaser.Keyboard.SPACEBAR)
         .onDown.add(playerJump);
-    var pipeInterval = 1.1;
+    var pipeInterval = 1;
     game.time.events
         .loop(pipeInterval * Phaser.Timer.SECOND,
     generatePipe);
 }
-
+function clickHandler(event) {
+    alert("click!");
+}
 function clickHandler(event) {
     alert("The position is: " + event.x + "," + event.y);
     game.add.sprite(event.x, event.y, "playerImg");
@@ -86,14 +75,20 @@ function clickHandler(event) {
 /*
  * This function updates the scene. It is called for every new frame.
  */
-function update() {game.physics.arcade
+function update() {
+    diesuperman();
+    game.physics.arcade
     .overlap(player,
     pipes,
     gameOver);
 }
 
-function gameOver(){
-   location.reload();
+function gameOver() {
+    game.destroy();
+}
+function diesuperman () {
+    if (player.y > 400 || player.y < 0){gameOver();}
+
 }
 function changeScore() {
     score = score + 1;
@@ -125,6 +120,7 @@ function generatePipe() {
                 addPipeBlock(750, count*50);
             }
         }
+
     changeScore();
 
     //}
@@ -141,9 +137,9 @@ function playerJump() {
 
 }
 
-/*function gameOver() {
+function gameOver() {
     location.reload();
-}*/
+}
 
 
 
