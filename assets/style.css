@@ -1,4 +1,4 @@
-h1 {color:#0060A0 ;
+h1 {color:#FF0000 ;
 font-size: 20px;
 font-family: Montserrat;
 }
@@ -13,11 +13,11 @@ font-family: Montserrat;
 }
 
 #fuchsia {
-    color: #FF0000;
+    color:#FF0000;
     font-size: 5 0px;
     font-family: fantasy;
     text-align: center;
-    
+    0
 }
 
 #welcome {
@@ -32,6 +32,7 @@ font-family: Montserrat;
     margin:0 auto;
     text-align:center;
     font-size: 30px;
+    font-color:#FF0000;
     background-color: #E3E3E3;
     border-radius: 5px;
     border: 2px ;
