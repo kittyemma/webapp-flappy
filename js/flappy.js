@@ -20,6 +20,10 @@ var pipes = [];
 
 $.get("/score", function(data){
     var scores = JSON.parse(data);
+    scores.sort(function (scoreA, scoreB){
+        var difference = scoreB.score - scoreA.score;
+        return difference;
+    });
     for (var i = 0; i < scores.length; i++) {
         $("#scoreBoard").append("<li>" + scores[i].name + ": " +
         scores[i].score + "</li>");
@@ -89,14 +93,18 @@ function create() {
     game.paused = true;
     game.input.keyboard.addKey(Phaser.Keyboard.ENTER)
     game.start = true;
-
+    if(isEmpty(fullName)) {
+        response.send("Please make sure you enter your name.");
+    }
 }
+
 
 function clickHandler(event) {
     alert("The position is: " + event.x + "," + event.y);
     game.add.sprite(event.x, event.y, "playerImg");
 }
 /*
+
  * This function updates the scene. It is called for every new frame.
  */
 function update() {
@@ -170,7 +178,9 @@ function diesuperman () {
     }
 }
 
-
+function isEmpty(str) {
+    return (!str || 0 === str.length);
+}
 
 
 
