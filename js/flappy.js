@@ -1,5 +1,5 @@
 // the Game object used by the phaser.io library
-var stateActions = { preload: preload, create: create, update: update };
+var actions = { preload: preload, create: create, update: update };
 
 // Phaser parameters:
 // - game width
@@ -16,7 +16,7 @@ var pipeInterval = 1.75;
 var gapSize = 150
 var gapMargin = 50
 var blockHeight = 50
-var game = new Phaser.Game(width, height, Phaser.AUTO, 'game', stateActions);
+var game = new Phaser.Game(width, height, Phaser.AUTO, "game", actions);
 
 
 /*
@@ -30,7 +30,8 @@ var labelScore;
 var pipes = [];
 var lois = [];
 var lex = [];
-var waitingForEnter = false;
+var waitingForEnter = true;
+var splashDisplay = [];
 
 jQuery("#greeting-form").on("submit", function(event_details) {
     var greeting = "Hello ";
@@ -54,45 +55,14 @@ function spaceHandler() {
  */
 function create() {
     game.add.image(0, 0, "backgroundImg")
-    var t=game.add.text(250, 150, "Good Luck!", {font: "50px Verdana", fill: "#00008A"});
+
     // set the background colour of the scene
 
-
-    game.input
-        .onDown
-        .add(clickHandler);
-
-    game.input
-        .keyboard.addKey(Phaser.Keyboard.SPACEBAR)
-        .onDown.add(spaceHandler);
-    //alert(score);
-    labelScore = game.add.text(20, 20, "0");
-    player = game.add.sprite(100, 200, "playerImg");
-    player.anchor.setTo(0, 0);
-    game.input.keyboard.addKey(Phaser.Keyboard.RIGHT)
-        .onDown.add(moveRight);
-    game.input.keyboard.addKey(Phaser.Keyboard.LEFT)
-        .onDown.add(moveLeft);
-    game.input.keyboard.addKey(Phaser.Keyboard.UP)
-        .onDown.add(moveUp);
-    game.input.keyboard.addKey(Phaser.Keyboard.DOWN)
-        .onDown.add(moveDown);
-    generatePipe();
-    game.physics.startSystem(Phaser.Physics.ARCADE);
-    game.physics.arcade.enable(player);
-    player.body.velocity.x = 0;
-    player.body.velocity.y = -80;
-    player.body.gravity.y = gameGravity;
-    game.input.keyboard
-        .addKey(Phaser.Keyboard.SPACEBAR)
-        .onDown.add(playerJump);
-    game.time.events
-        .loop(pipeInterval * Phaser.Timer.SECOND,
-    generate);
-    game.pause = true;
-
-
+    game.input.keyboard.addKey(Phaser.Keyboard.ENTER)
+        .onDown.add(start);
+    splashDisplay = game.add.text(310,180, "Good Luck!");
 }
+
 function generate() {
     var diceRoll = game.rnd.integerInRange(1, 10);
     if(diceRoll==1) {
@@ -115,27 +85,28 @@ function clickHandler(event) {
  * This function updates the scene. It is called for every new frame.
  */
 function update() {
-    diesuperman();
-    game.physics.arcade
-    .overlap(player,
-    pipes,
-    gameOver);
-    player.rotation = Math.atan(player.body.velocity.y / gameSpeed);
-    for(var i=lois.length - 1; i >= 0; i--){
-        game.physics.arcade.overlap(player,lois[i], function(){
-            changeGravity(-50);
-            lois[i].destroy();
-            lois.splice(i,1);
-        });
-    for(var i=lex.length - 1; i >= 0; i--){
-         game.physics.arcade.overlap(player,lex[i], function(){
-             changeGravity(-50);
-             lex[i].destroy();
-              lex.splice(i,1);
+    if(!waitingForEnter) {
+        diesuperman();
+        game.physics.arcade
+            .overlap(player,
+            pipes,
+            gameOver);
+        player.rotation = Math.atan(player.body.velocity.y / gameSpeed);
+
+        checkBonus(lois, -50);
+        checkBonus(lex, 50);
+    }
+}
+
+function checkBonus(bonusArray, bonusEffect){
+    for(var i=bonusArray.length - 1; i>=0; i--){
+        game.physics.arcade.overlap(player,bonusArray[i], function() {
+            changeGravity(bonusEffect);
+            bonusArray[i].destroy();
+            bonusArray.splice(i, 1);
+            changeGravity(bonusEffect);
         });
     }
-
-
 }
 
 function gameOver() {
@@ -222,7 +193,42 @@ function generateLex() {
     bonus.body.velocity.y = game.rnd.integerInRange(60,100);
 }
 
+function start() {
+    waitingForEnter = false;
+    game.input
+        .onDown
+        .add(clickHandler);
 
+    game.input
+        .keyboard.addKey(Phaser.Keyboard.SPACEBAR)
+        .onDown.add(spaceHandler);
+    //alert(score);
+    labelScore = game.add.text(20, 20, "0");
+    player = game.add.sprite(100, 200, "playerImg");
+    player.anchor.setTo(0, 0);
+    game.input.keyboard.addKey(Phaser.Keyboard.RIGHT)
+        .onDown.add(moveRight);
+    game.input.keyboard.addKey(Phaser.Keyboard.LEFT)
+        .onDown.add(moveLeft);
+    game.input.keyboard.addKey(Phaser.Keyboard.UP)
+        .onDown.add(moveUp);
+    game.input.keyboard.addKey(Phaser.Keyboard.DOWN)
+        .onDown.add(moveDown);
+    generatePipe();
+    game.physics.startSystem(Phaser.Physics.ARCADE);
+    game.physics.arcade.enable(player);
+    player.body.velocity.x = 0;
+    player.body.velocity.y = -80;
+    player.body.gravity.y = gameGravity;
+    game.input.keyboard
+        .addKey(Phaser.Keyboard.SPACEBAR)
+        .onDown.add(playerJump);
+    game.time.events
+        .loop(pipeInterval * Phaser.Timer.SECOND,
+        generate);
+    game.input.keyboard.addKey(Phaser.Keyboard.ENTER).onDown.remove(start);
+    splashDisplay.destroy();
+}
 
 
 
