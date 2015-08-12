@@ -135,6 +135,7 @@ function update() {
         });
     }
 
+
 }
 
 function gameOver() {
