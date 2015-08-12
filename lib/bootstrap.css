@@ -215,7 +215,7 @@ th {
     }
     pre,
     blockquote {
-        border: 1px solid #999;
+        border: 1px solid #79858a;
 
         page-break-inside: avoid;
     }
@@ -257,11 +257,11 @@ th {
     }
     .table td,
     .table th {
-        background-color: #fff !important;
+        background-color: #A8ACAE !important;
     }
     .table-bordered th,
     .table-bordered td {
-        border: 1px solid #ddd !important;
+        border: 1px solid #A8ACAE !important;
     }
 }
 @font-face {
@@ -952,7 +952,7 @@ img {
     height: auto;
     padding: 4px;
     line-height: 1.42857143;
-    background-color: #fff;
+    background-color: #A8ACAE;
     border: 1px solid #ddd;
     border-radius: 4px;
     -webkit-transition: all .2s ease-in-out;
@@ -966,7 +966,7 @@ hr {
     margin-top: 20px;
     margin-bottom: 20px;
     border: 0;
-    border-top: 1px solid #eee;
+    border-top: 1px solid #A8ACAE;
 }
 .sr-only {
     position: absolute;
@@ -4623,14 +4623,14 @@ a.badge:focus {
     padding: 30px 15px;
     margin-bottom: 30px;
     color: inherit;
-    background-color: #eee;
+    background-color:#0000FF ;
 }
 .jumbotron h1,
 .jumbotron .h1 {
     color: inherit;
 }
 .jumbotron p {
-    margin-bottom: 15px;
+    margin-bottom: 8px;
     font-size: 21px;
     font-weight: 200;
 }
@@ -4639,14 +4639,14 @@ a.badge:focus {
 }
 .container .jumbotron,
 .container-fluid .jumbotron {
-    border-radius: 6px;
+    border-radius: 7px;
 }
 .jumbotron .container {
     max-width: 100%;
 }
 @media screen and (min-width: 768px) {
     .jumbotron {
-        padding: 48px 0;
+        padding: 50px ;
     }
     .container .jumbotron,
     .container-fluid .jumbotron {

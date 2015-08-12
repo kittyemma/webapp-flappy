@@ -17,13 +17,34 @@ var score = 0;
 var player;
 var labelScore;
 var pipes = [];
+
+$.get("/score", function(data){
+    var scores = JSON.parse(data);
+    for (var i = 0; i < scores.length; i++) {
+        $("#scoreBoard").append("<li>" + scores[i].name + ": " +
+        scores[i].score + "</li>");
+    }
+});
+$.get("/score", function(scores){
+    console.log("Data: ",scores);
+});
+
+jQuery("#greeting-form").on("submit", function(event_details) {
+        var greeting = "Hello ";
+        var name = jQuery("#fullName").val();
+        var greeting_message = greeting + name;
+        jQuery("#greeting-form").hide();
+        jQuery("#greeting").append("<p>" + greeting_message + " (" +
+        jQuery("#email").val() + "): " + jQuery("#score").val() + "</p>");
+        event_details.preventDefault();
+    });
+
+
 function preload() {
     game.load.image("playerImg", "../assets/flappy_superman.png");
     game.load.image("pipe","../assets/pipe_pink.png");
 }
-function spaceHandler() {
- game.sound.play("score");
- }
+
  /*
  * Initialises the game. This function is only called once.
  */
@@ -85,12 +106,10 @@ function update() {
     pipes,
     gameOver);
 }
-
-
-function diesuperman () {
-    if (player.y > 400 || player.y < 0){gameOver();}
-
+function spaceHandler() {
+    game.sound.play("score");
 }
+
 function changeScore() {
     score = score + 1;
     labelScore.setText(score.toString());
@@ -139,12 +158,17 @@ function playerJump() {
 }
 
 function gameOver() {
-    ///game.destroy();
+    game.destroy();
     score=0;
-    game.state.restart();
+    $("#score").val(score);
+    $("#greeting").show();
 }
 
-
+function diesuperman () {
+    if (player.y > 400 || player.y < 0){
+        gameOver();
+    }
+}
 
 
 
