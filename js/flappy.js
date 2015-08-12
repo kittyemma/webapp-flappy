@@ -7,16 +7,16 @@ var gameSpeed = 200;
 var gameGravity = 200;
 var jumpPower = 200;
 var pipeInterval = 1.75;
-var gapSize = 150
-var gapMargin = 50
-var blockHeight = 50
+var gapSize = 150;
+var gapMargin = 50;
+var blockHeight = 50;
 var game = new Phaser.Game(width, height, Phaser.AUTO, 'game', stateActions);
 
 /*
  * Loads all resources for the game and gives them names.
  *
  */
-var score = 0;
+var score = -2;
 var player;
 var labelScore;
 var pipes = [];
@@ -72,12 +72,12 @@ function create() {
         .onDown
         .add(clickHandler);
 
-    game.input
-        .keyboard.addKey(Phaser.Keyboard.SPACEBAR)
-        .onDown.add(spaceHandler);
+ //   game.input
+   //     .keyboard.addKey(Phaser.Keyboard.SPACEBAR)
+   //     .onDown.add(spaceHandler);
     //alert(score);
 
-    labelScore = game.add.text(20, 20, "0");
+    labelScore = game.add.text(20, 20, "0", {font: "30px Arial", fill: "#FFFFFF"});
 
     player = game.add.sprite(100, 200, "playerImg");
 
@@ -114,12 +114,20 @@ function create() {
     game.paused = true;
 
     game.input.keyboard.addKey(Phaser.Keyboard.ENTER)
+        .onDown.add(gamestart);
 
-    game.start = true;
+
 
     if(isEmpty(fullName)) {
         response.send("Please make sure you enter your name.");
     }
+    
+}
+
+
+function gamestart(){
+
+    game.paused = false;
 }
 
 function generate() {
@@ -147,13 +155,10 @@ function update() {
     game.physics.arcade.overlap(player, pipes, gameOver);
     player.rotation = Math.atan(player.body.velocity.y / gameSpeed);
 }
-function spaceHandler() {
-    game.sound.play("score");
-}
 
 function changeScore() {
     score = score + 1;
-    labelScore.setText(score.toString());
+    labelScore.setText(score.toString(), {font: "30px Arial", fill: "#FFFFFF"});
 }
 function moveLeft() {
     player.x = player.x - 50
@@ -204,9 +209,10 @@ function playerJump() {
 
 function gameOver() {
     game.destroy();
-    score=0;
+
     $("#score").val(score);
     $("#greeting").show();
+    score=0;
 }
 
 function diesuperman () {

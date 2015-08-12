@@ -40,6 +40,7 @@ app.get("/score", function(request, response) {
         response.send(scores);
     })
 });
+
 var server = app.listen(8080, function() {
     var host = server.address().address;
     var port = server.address().port;
