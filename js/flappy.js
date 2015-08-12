@@ -1,13 +1,16 @@
 // the Game object used by the phaser.io library
 var stateActions = { preload: preload, create: create, update: update };
 
-// Phaser parameters:
-// - game width
-// - game height
-// - renderer (go for Phaser.AUTO)
-// - element where the game will be drawn ('game')
-// - actions on the game state (or null for nothing)
-var game = new Phaser.Game(790, 400, Phaser.AUTO, 'game', stateActions);
+var width = 790;
+var height = 400;
+var gameSpeed = 200;
+var gameGravity = 200;
+var jumpPower = 200;
+var pipeInterval = 1.75;
+var gapSize = 150
+var gapMargin = 50
+var blockHeight = 50
+var game = new Phaser.Game(width, height, Phaser.AUTO, 'game', stateActions);
 
 /*
  * Loads all resources for the game and gives them names.
@@ -17,6 +20,9 @@ var score = 0;
 var player;
 var labelScore;
 var pipes = [];
+var lois = [];
+var lex = [];
+var waitingForEnter = false;
 
 $.get("/score", function(data){
     var scores = JSON.parse(data);
@@ -46,62 +52,91 @@ jQuery("#greeting-form").on("submit", function(event_details) {
 
 function preload() {
     game.load.image("playerImg", "../assets/flappy_superman.png");
-    game.load.image("pipe","../assets/pipe_pink.png");
+    game.load.image("pipe","../assets/skyscraper2.png");
+    game.load.image("backgroundImg", "../assets/newyork.jpg");
+    game.load.image("powerUp", "../assets/loislane2.jpg");
+    game.load.image("powerDown","../assets/lexluther2.jpg");
 }
 
  /*
  * Initialises the game. This function is only called once.
  */
 function create() {
-    game.stage.setBackgroundColor("#CEDAE6");
+
+    game.add.image(0, 0, "backgroundImg")
+
     var t=game.add.text(250, 150, "Good Luck!", {font: "50px Verdana", fill: "#00008A"});
     // set the background colour of the scene
-    game.add.sprite(10, 350, "playerImg");
-    game.add.sprite(730, 350, "playerImg");
-    game.add.sprite(730, 10, "playerImg");
+
     game.input
         .onDown
         .add(clickHandler);
+
     game.input
         .keyboard.addKey(Phaser.Keyboard.SPACEBAR)
         .onDown.add(spaceHandler);
     //alert(score);
+
     labelScore = game.add.text(20, 20, "0");
+
     player = game.add.sprite(100, 200, "playerImg");
+
+    player.anchor.setTo(0, 0);
+
     game.input.keyboard.addKey(Phaser.Keyboard.RIGHT)
         .onDown.add(moveRight);
+
     game.input.keyboard.addKey(Phaser.Keyboard.LEFT)
         .onDown.add(moveLeft);
+
     game.input.keyboard.addKey(Phaser.Keyboard.UP)
         .onDown.add(moveUp);
+
     game.input.keyboard.addKey(Phaser.Keyboard.DOWN)
         .onDown.add(moveDown);
+
     generatePipe();
     game.physics.startSystem(Phaser.Physics.ARCADE);
     game.physics.arcade.enable(player);
+
     player.body.velocity.x = 0;
     player.body.velocity.y = -80;
-    player.body.gravity.y = 175;
+    player.body.gravity.y = gameGravity;
+
     game.input.keyboard
         .addKey(Phaser.Keyboard.SPACEBAR)
         .onDown.add(playerJump);
-    var pipeInterval = 1;
+
     game.time.events
         .loop(pipeInterval * Phaser.Timer.SECOND,
     generatePipe);
 
     game.paused = true;
+
     game.input.keyboard.addKey(Phaser.Keyboard.ENTER)
+
     game.start = true;
+
     if(isEmpty(fullName)) {
         response.send("Please make sure you enter your name.");
     }
 }
 
+function generate() {
+    var diceRoll = game.rnd.integerInRange(1, 10);
+    if(diceRoll==1) {
+        generateLex();
+
+    } else if(diceRoll==2) {
+        generateLois();
+
+    } else {
+        generatePipe();
+    }
+}
 
 function clickHandler(event) {
-    alert("The position is: " + event.x + "," + event.y);
-    game.add.sprite(event.x, event.y, "playerImg");
+    alert("Game Paused");
 }
 /*
 
@@ -109,10 +144,8 @@ function clickHandler(event) {
  */
 function update() {
     diesuperman();
-    game.physics.arcade
-    .overlap(player,
-    pipes,
-    gameOver);
+    game.physics.arcade.overlap(player, pipes, gameOver);
+    player.rotation = Math.atan(player.body.velocity.y / gameSpeed);
 }
 function spaceHandler() {
     game.sound.play("score");
@@ -141,13 +174,15 @@ function generatePipe() {
         //    game.add.sprite(0, count * 50, 150, "pipe");
         //}
 
-        var gapStart = game.rnd.integerInRange(0, 6);
-        for (var count = 0; count < 8; count = count + 1) {
-            if (count != gapStart && count != gapStart + 1 && count != gapStart + 2) {
-                //game.add.sprite(pipeNumber * 50, count * 50, "pipe");
-                addPipeBlock(750, count*50);
+    var gapStart = game.rnd.integerInRange(gapMargin, height - gapSize - gapMargin);
+
+    for(var y=gapStart; y > 0 ; y -= blockHeight) {
+        addPipeBlock(width, y - blockHeight);
+    }
+    for(var y = gapStart + gapSize; y < height; y += blockHeight) {
+        addPipeBlock(width, y);
             }
-        }
+
 
     changeScore();
 
@@ -155,13 +190,15 @@ function generatePipe() {
 }
 function addPipeBlock(x, y) {
     var pipeBlock = game.add.sprite(x,y,"pipe");
+    pipeBlock.width = 50;
+    pipeBlock.height = 50;
     pipes.push(pipeBlock);
     game.physics.arcade.enable(pipeBlock);
-    pipeBlock.body.velocity.x = -400;
+    pipeBlock.body.velocity.x = -gameSpeed;
 }
 
 function playerJump() {
-    player.body.velocity.y = -150;
+    player.body.velocity.y = -jumpPower;
 
 }
 
@@ -181,11 +218,27 @@ function diesuperman () {
 function isEmpty(str) {
     return (!str || 0 === str.length);
 }
+function generateLois() {
+    var bonus = game.add.sprite(width, height, "powerUp");
+    lois.push(bonus);
+    game.physics.arcade.enable(bonus);
+    bonus.body.velocity.x = -200;
+    bonus.body.velocity.y = - game.rnd.integerInRange(60, 100);
+}
+
+function generateLex() {
+    var bonus = game.add.sprite(width, 0, "powerDown");
+    lex.push(bonus);
+    game.physics.arcade.enable(bonus);
+    bonus.body.velocity.x = - 200;
+    bonus.body.velocity.y = game.rnd.integerInRange(60,100);
+}
 
 
-
-
-
+function changeGravity(g) {
+    gameGravity += g;
+    player.body.gravity.y = gameGravity;
+}
 
 
 
