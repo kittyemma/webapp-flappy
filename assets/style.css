@@ -38,6 +38,7 @@ font-family: Montserrat;
     height: 180px;
 }
 #greeting {
+    display: none;
     position: absolute;
 left: 36%;
 top: 40%;
