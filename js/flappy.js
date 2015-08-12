@@ -23,6 +23,7 @@ var game = new Phaser.Game(width, height, Phaser.AUTO, 'game', stateActions);
  * Loads all resources for the game and gives them names.
  *
  */
+
 var score = 0;
 var player;
 var labelScore;
@@ -120,6 +121,20 @@ function update() {
     pipes,
     gameOver);
     player.rotation = Math.atan(player.body.velocity.y / gameSpeed);
+    for(var i=lois.length - 1; i >= 0; i--){
+        game.physics.arcade.overlap(player,lois[i], function(){
+            changeGravity(-50);
+            lois[i].destroy();
+            lois.splice(i,1);
+        });
+    for(var i=lex.length - 1; i >= 0; i--){
+         game.physics.arcade.overlap(player,lex[i], function(){
+             changeGravity(-50);
+             lex[i].destroy();
+              lex.splice(i,1);
+        });
+    }
+
 }
 
 function gameOver() {
