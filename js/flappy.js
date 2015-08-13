@@ -10,7 +10,7 @@ var actions = { preload: preload, create: create, update: update };
 var width = 790;
 var height = 400;
 var gameSpeed = 200;
-var gameGravity = 200;
+var gameGravity = 400;
 var jumpPower = 200;
 var pipeInterval = 1.75;
 var gapSize = 150
@@ -30,8 +30,12 @@ var labelScore;
 var pipes = [];
 var lois = [];
 var lex = [];
+var superBadge = [];
 var waitingForEnter = true;
 var splashDisplay = [];
+
+
+
 
 jQuery("#greeting-form").on("submit", function(event_details) {
     var greeting = "Hello ";
@@ -46,6 +50,8 @@ function preload() {
     game.load.image("backgroundImg", "../assets/newyork.jpg");
     game.load.image("powerUp", "../assets/loislane2.jpg");
     game.load.image("powerDown","../assets/lexluther2.jpg");
+    game.load.image("point","../assets/supermanbadge2.png");
+
 }
 function spaceHandler() {
  game.sound.play("score");
@@ -60,7 +66,7 @@ function create() {
 
     game.input.keyboard.addKey(Phaser.Keyboard.ENTER)
         .onDown.add(start);
-    splashDisplay = game.add.text(310,180, "Good Luck!");
+    splashDisplay = game.add.text(220,180, "Good Luck! Press ENTER");
 }
 
 function generate() {
@@ -75,9 +81,8 @@ function generate() {
         generatePipe();
     }
 }
-//function clickHandler(event) {
-//    alert("click!");
-//}
+
+
 function clickHandler(event) {
     alert("Game Paused");
 }
@@ -95,6 +100,13 @@ function update() {
 
         checkBonus(lois, -50);
         checkBonus(lex, 50);
+        for(var n = superBadge.length - 1; n>=0; n--){
+            if(game.physics.arcade.overlap(player, superBadge[n])){
+                changeScore();
+                superBadge[n].destroy();
+                superBadge.splice(n, 1);
+            }
+        }
     }
 }
 
@@ -104,14 +116,11 @@ function checkBonus(bonusArray, bonusEffect){
             changeGravity(bonusEffect);
             bonusArray[i].destroy();
             bonusArray.splice(i, 1);
-            changeGravity(bonusEffect);
         });
     }
 }
 
-function gameOver() {
-    game.destroy();
-}
+
 function diesuperman () {
     if (player.y > 400 || player.y < 0){gameOver();}
 
@@ -134,12 +143,10 @@ function moveDown() {
 }
 function generatePipe() {
 
-    //for (var pipeNumber = 0; pipeNumber < 16; pipeNumber = pipeNumber + 4) {
-        //if (count != gapStart && count != gapStart + 1) {
-        //    game.add.sprite(0, count * 50, 150, "pipe");
-        //}
-
         var gapStart = game.rnd.integerInRange(gapMargin, height - gapSize - gapMargin);
+
+    gameSpeed += 50;
+    pipeInterval -= 0.05;
 
         for(var y=gapStart; y > 0 ; y -= blockHeight) {
             addPipeBlock(width, y - blockHeight);
@@ -149,7 +156,7 @@ function generatePipe() {
            }
 
 
-    changeScore();
+    addBadge(width, gapStart + 56);
 
     //}
 }
@@ -168,9 +175,11 @@ function playerJump() {
 }
 
 function gameOver() {
+    game.destroy();
     location.reload();
     $("#greeting") . show();
     gameGravity = 200;
+    superBadge = [];
 }
 
 function changeGravity(g) {
@@ -183,6 +192,7 @@ function generateLois() {
     game.physics.arcade.enable(bonus);
     bonus.body.velocity.x = -200;
     bonus.body.velocity.y = - game.rnd.integerInRange(60, 100);
+    gapSize +=30;
 }
 
 function generateLex() {
@@ -191,6 +201,7 @@ function generateLex() {
     game.physics.arcade.enable(bonus);
     bonus.body.velocity.x = - 200;
     bonus.body.velocity.y = game.rnd.integerInRange(60,100);
+    gapSize -=30;
 }
 
 function start() {
@@ -230,8 +241,13 @@ function start() {
     splashDisplay.destroy();
 }
 
-
-
+function addBadge(x, y) {
+    console.log("adding badge")
+    Badge = game.add.sprite(x, y, "point");
+    superBadge.push(Badge);
+    game.physics.arcade.enable(Badge);
+    Badge.body.velocity.x = -gameSpeed;
+}
 
 
 
