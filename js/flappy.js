@@ -96,10 +96,14 @@ function update() {
             .overlap(player,
             pipes,
             gameOver);
+
+
+
         player.rotation = Math.atan(player.body.velocity.y / gameSpeed);
 
-        checkBonus(lois, -50);
-        checkBonus(lex, 50);
+        checkBonus("lois", lois, -50);
+        checkBonus("lex", lex, 50);
+
         for(var n = superBadge.length - 1; n>=0; n--){
             if(game.physics.arcade.overlap(player, superBadge[n])){
                 changeScore();
@@ -107,17 +111,32 @@ function update() {
                 superBadge.splice(n, 1);
             }
         }
+
+        //game.physics.arcade
+        //    .overlap(player,
+        //    pipes,
+        //    function() { gapSize += 30
+        //    });
+
+
     }
 }
 
-function checkBonus(bonusArray, bonusEffect){
+function checkBonus(bonusName, bonusArray, bonusEffect){
     for(var i=bonusArray.length - 1; i>=0; i--){
         game.physics.arcade.overlap(player,bonusArray[i], function() {
             changeGravity(bonusEffect);
             bonusArray[i].destroy();
             bonusArray.splice(i, 1);
+            if (bonusName == "lex")
+            {gapSize -= 30;
+            }
+            if (bonusName == "lois")
+            {gapSize += 30;
+            }
         });
     }
+
 }
 
 
@@ -128,12 +147,6 @@ function diesuperman () {
 function changeScore() {
     score = score + 1;
     labelScore.setText(score.toString());
-}
-function moveLeft() {
-    player.x = player.x - 50
-}
-function moveRight() {
-    player.x = player.x + 50
 }
 function moveUp() {
     player.y = player.y - 50
@@ -192,7 +205,7 @@ function generateLois() {
     game.physics.arcade.enable(bonus);
     bonus.body.velocity.x = -200;
     bonus.body.velocity.y = - game.rnd.integerInRange(60, 100);
-    gapSize +=30;
+
 }
 
 function generateLex() {
@@ -201,7 +214,7 @@ function generateLex() {
     game.physics.arcade.enable(bonus);
     bonus.body.velocity.x = - 200;
     bonus.body.velocity.y = game.rnd.integerInRange(60,100);
-    gapSize -=30;
+
 }
 
 function start() {
@@ -217,10 +230,6 @@ function start() {
     labelScore = game.add.text(20, 20, "0");
     player = game.add.sprite(100, 200, "playerImg");
     player.anchor.setTo(0, 0);
-    game.input.keyboard.addKey(Phaser.Keyboard.RIGHT)
-        .onDown.add(moveRight);
-    game.input.keyboard.addKey(Phaser.Keyboard.LEFT)
-        .onDown.add(moveLeft);
     game.input.keyboard.addKey(Phaser.Keyboard.UP)
         .onDown.add(moveUp);
     game.input.keyboard.addKey(Phaser.Keyboard.DOWN)
