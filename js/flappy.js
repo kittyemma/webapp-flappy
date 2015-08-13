@@ -60,7 +60,9 @@ function spaceHandler() {
  * Initialises the game. This function is only called once.
  */
 function create() {
-    game.add.image(0, 0, "backgroundImg")
+    var bg = game.add.tileSprite(0, 0, width, height, "backgroundImg");
+    bg.autoScroll(- gameSpeed / 15, 0);
+    //game.add.image(0, 0, "backgroundImg");
 
     // set the background colour of the scene
 
