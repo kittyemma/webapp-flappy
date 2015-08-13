@@ -1,28 +1,52 @@
 // the Game object used by the phaser.io library
-var stateActions = {preload: preload, create: create, update: update};
+var actions = { preload: preload, create: create, update: update };
 
+// Phaser parameters:
+// - game width
+// - game height
+// - renderer (go for Phaser.AUTO)
+// - element where the game will be drawn ('game')
+// - actions on the game state (or null for nothing)
 var width = 790;
 var height = 400;
 var gameSpeed = 200;
-var gameGravity = 200;
+var gameGravity = 400;
 var jumpPower = 200;
 var pipeInterval = 1.75;
 var gapSize = 150;
 var gapMargin = 50;
 var blockHeight = 50;
-var game = new Phaser.Game(width, height, Phaser.AUTO, 'game', stateActions);
+var game = new Phaser.Game(width, height, Phaser.AUTO, "game", actions);
+
 
 /*
  * Loads all resources for the game and gives them names.
  *
  */
-var score = -2;
+
+var score = 0;
 var player;
 var labelScore;
 var pipes = [];
 var lois = [];
 var lex = [];
-var waitingForEnter = false;
+var superBadge = [];
+var waitingForEnter = true;
+var splashDisplay = [];
+
+
+function preload() {
+    game.load.image("playerImg", "../assets/flappy_superman.png");
+    game.load.image("pipe","../assets/skyscraper2.png");
+    game.load.image("backgroundImg", "../assets/newyork.jpg");
+    game.load.image("powerUp", "../assets/loislane2.jpg");
+    game.load.image("powerDown","../assets/lexluther2.jpg");
+    game.load.image("point","../assets/supermanbadge2.png");
+
+}
+function spaceHandler() {
+    game.sound.play("score");
+}
 
 $.get("/score", function (scores) {
     //var scores = JSON.parse(data);
@@ -30,11 +54,12 @@ $.get("/score", function (scores) {
         var difference = scoreB.score - scoreA.score;
         return difference;
     });
-    for (var i = 0; i < scores.length; i++) {
+    for (var i = 0; i < 3; i++) {
         $("#scoreBoard").append("<li>" + scores[i].name + ": " +
         scores[i].score + "</li>");
     }
 });
+
 /*$.get("/score", function (scores) {
     console.log("Data: ", scores);
 });*/
@@ -47,84 +72,129 @@ jQuery("#greeting-form").on("submit", function (event_details) {
     jQuery("#greeting").append("<p>" + greeting_message + " (" +
     jQuery("#email").val() + "): " + jQuery("#score").val() + "</p>");
     jQuery("#greeting").fadeOut(6 * 1000);
+
+
+    $.ajax({url : '/score', type : 'post', data : jQuery("#greeting-form").serialize()});
+
+    score = 0;
+    location.reload();
+    gameGravity = 200;
+    superBadge = [];
     //game.paused = false;
-    //event_details.preventDefault();
+    event_details.preventDefault();
 });
 
 
 function preload() {
     game.load.image("playerImg", "../assets/flappy_superman.png");
-    game.load.image("pipe", "../assets/skyscraper2.png");
+    game.load.image("pipe","../assets/skyscraper2.png");
     game.load.image("backgroundImg", "../assets/newyork.jpg");
     game.load.image("powerUp", "../assets/loislane2.jpg");
-    game.load.image("powerDown", "../assets/lexluther2.jpg");
-}
+    game.load.image("powerDown","../assets/lexluther2.jpg");
+    game.load.image("point","../assets/supermanbadge2.png");
 
+}
+/*
+ * Initialises the game. This function is only called once.
+ */
 /*
  * Initialises the game. This function is only called once.
  */
 function create() {
-
-    game.add.image(0, 0, "backgroundImg")
-
-    var t = game.add.text(250, 150, "Good Luck!", {font: "50px Verdana", fill: "#00008A"});
-    // set the background colour of the scene
-
-    game.input
-        .onDown
-        .add(clickHandler);
-
-    //   game.input
-    //     .keyboard.addKey(Phaser.Keyboard.SPACEBAR)
-    //     .onDown.add(spaceHandler);
-    //alert(score);
-
-    labelScore = game.add.text(20, 20, "0", {font: "30px Arial", fill: "#FFFFFF"});
+    var bg = game.add.tileSprite(0, 0, width, height, "backgroundImg");
+    bg.autoScroll(- gameSpeed / 15, 0);
+    //game.add.image(0, 0, "backgroundImg");
 
     player = game.add.sprite(100, 200, "playerImg");
-
     player.anchor.setTo(0, 0);
+    // set the background colour of the scene
 
-    game.input.keyboard.addKey(Phaser.Keyboard.RIGHT)
-        .onDown.add(moveRight);
-
-    game.input.keyboard.addKey(Phaser.Keyboard.LEFT)
-        .onDown.add(moveLeft);
-
-    game.input.keyboard.addKey(Phaser.Keyboard.UP)
-        .onDown.add(moveUp);
-
-    game.input.keyboard.addKey(Phaser.Keyboard.DOWN)
-        .onDown.add(moveDown);
-
-    generatePipe();
     game.physics.startSystem(Phaser.Physics.ARCADE);
     game.physics.arcade.enable(player);
 
-    player.body.velocity.x = 0;
-    player.body.velocity.y = -80;
-    player.body.gravity.y = gameGravity;
-
-    game.input.keyboard
-        .addKey(Phaser.Keyboard.SPACEBAR)
-        .onDown.add(playerJump);
-
-    game.time.events
-        .loop(pipeInterval * Phaser.Timer.SECOND,
-        generatePipe);
-
-    game.paused = true;
-
     game.input.keyboard.addKey(Phaser.Keyboard.ENTER)
-        .onDown.add(gamestart);
+        .onDown.add(start);
+    splashDisplay = game.add.text(220,180, "Good Luck! Press ENTER");
+}
+//
+//function create() {
+//
+//    game.add.image(0, 0, "backgroundImg")
+//
+//    var t = game.add.text(250, 150, "Good Luck!", {font: "50px Verdana", fill: "#00008A"});
+//    // set the background colour of the scene
+//
+//    game.input
+//        .onDown
+//        .add(clickHandler);
+//
+//    //   game.input
+//    //     .keyboard.addKey(Phaser.Keyboard.SPACEBAR)
+//    //     .onDown.add(spaceHandler);
+//    //alert(score);
+//
+//    labelScore = game.add.text(20, 20, "0", {font: "30px Arial", fill: "#FFFFFF"});
+//
+//    player = game.add.sprite(100, 200, "playerImg");
+//
+//    player.anchor.setTo(0, 0);
+//
+//    game.input.keyboard.addKey(Phaser.Keyboard.RIGHT)
+//        .onDown.add(moveRight);
+//
+//    game.input.keyboard.addKey(Phaser.Keyboard.LEFT)
+//        .onDown.add(moveLeft);
+//
+//    game.input.keyboard.addKey(Phaser.Keyboard.UP)
+//        .onDown.add(moveUp);
+//
+//    game.input.keyboard.addKey(Phaser.Keyboard.DOWN)
+//        .onDown.add(moveDown);
+//
+//    generatePipe();
+//    game.physics.startSystem(Phaser.Physics.ARCADE);
+//    game.physics.arcade.enable(player);
+//
+//    player.body.velocity.x = 0;
+//    player.body.velocity.y = -80;
+//    player.body.gravity.y = gameGravity;
+//
+//    game.input.keyboard
+//        .addKey(Phaser.Keyboard.SPACEBAR)
+//        .onDown.add(playerJump);
+//
+//    game.time.events
+//        .loop(pipeInterval * Phaser.Timer.SECOND,
+//        generatePipe);
+//
+//    game.paused = true;
+//
+//    game.input.keyboard.addKey(Phaser.Keyboard.ENTER)
+//        .onDown.add(gamestart);
+//
+//}
 
-
-    if (isEmpty(fullName)) {
-        response.send("Please make sure you enter your name.");
+function checkBonus(bonusName, bonusArray, bonusEffect){
+    for(var i=bonusArray.length - 1; i>=0; i--){
+        game.physics.arcade.overlap(player,bonusArray[i], function() {
+            changeGravity(bonusEffect);
+            bonusArray[i].destroy();
+            bonusArray.splice(i, 1);
+            if (bonusName == "lex")
+            {gapSize -= 30;
+            }
+            if (bonusName == "lois")
+            {gapSize += 30;
+            }
+        });
     }
 
 }
 
+
+if (isEmpty(fullName)) {
+    response.send("Please make sure you enter your name.");
+}
 
 function gamestart() {
 
@@ -151,11 +221,34 @@ function clickHandler(event) {
 
  * This function updates the scene. It is called for every new frame.
  */
+/*
+ * This function updates the scene. It is called for every new frame.
+ */
 function update() {
-    diesuperman();
-    game.physics.arcade.overlap(player, pipes, gameOver);
-    player.rotation = Math.atan(player.body.velocity.y / gameSpeed);
+    if(!waitingForEnter) {
+        diesuperman();
+        game.physics.arcade
+            .overlap(player,
+            pipes,
+            gameOver);
+
+
+
+        player.rotation = Math.atan(player.body.velocity.y / gameSpeed);
+
+        checkBonus("lois", lois, -50);
+        checkBonus("lex", lex, 50);
+
+        for(var n = superBadge.length - 1; n>=0; n--){
+            if(game.physics.arcade.overlap(player, superBadge[n])){
+                changeScore();
+                superBadge[n].destroy();
+                superBadge.splice(n, 1);
+            }
+        }
+    }
 }
+
 
 function changeScore() {
     score = score + 1;
@@ -181,6 +274,8 @@ function generatePipe() {
     //}
 
     var gapStart = game.rnd.integerInRange(gapMargin, height - gapSize - gapMargin);
+    gameSpeed += 50;
+    pipeInterval -= 0.05;
 
     for (var y = gapStart; y > 0; y -= blockHeight) {
         addPipeBlock(width, y - blockHeight);
@@ -189,8 +284,7 @@ function generatePipe() {
         addPipeBlock(width, y);
     }
 
-
-    changeScore();
+    addBadge(width, gapStart + 56);
 
     //}
 }
@@ -210,13 +304,10 @@ function playerJump() {
 
 function gameOver() {
     //game.paused = true;
-
+    game.destroy();
     $("#score").val(score);
     $("#greeting").show();
     $("greeting-form").show();
-    score = -1;
-    game.state.restart();
-
     //$("#greeting").hide();
 }
 
@@ -229,42 +320,65 @@ function diesuperman() {
 function isEmpty(str) {
     return (!str || 0 === str.length);
 }
-function generateLois() {
-    var bonus = game.add.sprite(width, height, "powerUp");
-    lois.push(bonus);
-    game.physics.arcade.enable(bonus);
-    bonus.body.velocity.x = -200;
-    bonus.body.velocity.y = -game.rnd.integerInRange(60, 100);
-}
-
-function generateLex() {
-    var bonus = game.add.sprite(width, 0, "powerDown");
-    lex.push(bonus);
-    game.physics.arcade.enable(bonus);
-    bonus.body.velocity.x = -200;
-    bonus.body.velocity.y = game.rnd.integerInRange(60, 100);
-}
-
 
 function changeGravity(g) {
     gameGravity += g;
     player.body.gravity.y = gameGravity;
 }
 
+function generateLois() {
+    var bonus = game.add.sprite(width, height, "powerUp");
+    lois.push(bonus);
+    game.physics.arcade.enable(bonus);
+    bonus.body.velocity.x = -200;
+    bonus.body.velocity.y = - game.rnd.integerInRange(60, 100);
 
+}
 
+function generateLex() {
+    var bonus = game.add.sprite(width, 0, "powerDown");
+    lex.push(bonus);
+    game.physics.arcade.enable(bonus);
+    bonus.body.velocity.x = - 200;
+    bonus.body.velocity.y = game.rnd.integerInRange(60,100);
 
+}
 
+function start() {
+    waitingForEnter = false;
+    game.input
+        .onDown
+        .add(clickHandler);
 
+    game.input
+        .keyboard.addKey(Phaser.Keyboard.SPACEBAR)
+        .onDown.add(spaceHandler);
+    //alert(score);
+    labelScore = game.add.text(20, 20, "0");
 
+    game.input.keyboard.addKey(Phaser.Keyboard.UP)
+        .onDown.add(moveUp);
+    game.input.keyboard.addKey(Phaser.Keyboard.DOWN)
+        .onDown.add(moveDown);
+    generatePipe();
 
+    player.body.velocity.x = 0;
+    player.body.velocity.y = -80;
+    player.body.gravity.y = gameGravity;
+    game.input.keyboard
+        .addKey(Phaser.Keyboard.SPACEBAR)
+        .onDown.add(playerJump);
+    game.time.events
+        .loop(pipeInterval * Phaser.Timer.SECOND,
+        generate);
+    game.input.keyboard.addKey(Phaser.Keyboard.ENTER).onDown.remove(start);
+    splashDisplay.destroy();
+}
 
-
-
-
-
-
-
-
-
-
+function addBadge(x, y) {
+    console.log("adding badge")
+    Badge = game.add.sprite(x, y, "point");
+    superBadge.push(Badge);
+    game.physics.arcade.enable(Badge);
+    Badge.body.velocity.x = -gameSpeed;
+}
