@@ -1,43 +1,54 @@
-h1 {color: fuchsia;
+h1 {color:#FF0000 ;
 font-size: 20px;
 font-family: Montserrat;
 }
-.score {color: #c0c0c0}
+.score {color:#858585}
 .gold {color:gold}
+
+
 
 #gameLink {
     text-align: center;
-    border: 1px solid fuchsia;
+    border: 1px #0060A0;
 }
 
 #fuchsia {
-    color: fuchsia;
-    font-size: 100px;
-    font-family: serif;
+    color:#EF5350;
+    font-size: 5 0px;
+    font-family: fantasy;
+    text-align: center;
+
 }
+
+#welcome {
+    text-align:center;
+    color:#EF5350;
+
+}
+
 
 #league{
-    width:200px;
+    width:300px;
     margin:0 auto;
     text-align:center;
-    font-size: 30px
-}
-
-#greeting {
-    position: absolute;
-    left: 40%;
-    top: 40%;
-    background: #fff;
-    width: 350px;
-    height: 300px;
-    border: 2px solid gray;
+    font-size: 30px;
+    font-color:#FF0000;
+    background-color: #E3E3E3;
     border-radius: 5px;
-    padding: 20px;
-    display: none;
-
+    border: 2px ;
+    height: 180px;
 }
-#goodluck {
-    font: 'Roboto', sans-serif;
-    font-size: 40px;
-    color:#FF0000;
+#greeting {
+    display: none;
+    position: absolute;
+left: 36%;
+top: 40%;
+background: #fff;
+width: 350px;
+height: 300px;
+border: 2px darkgray;
+border-radius: 5px;
+padding: 20px;
+font:'Roboto',sans-serif;
+font-size: 20px;
 }

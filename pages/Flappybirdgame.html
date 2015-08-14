@@ -1,58 +1,64 @@
 <!DOCTYPE html>
 <html>
 
-<script type="text/javascript" src="../lib/phaser.min.js"></script>
-<script type="text/javascript" src="../js/flappy.js"></script>
-<script src="../lib/jquery.js"></script>
 
 <head lang="en">
     <meta charset="UTF-8">
 
-
-    <link rel="stylesheet" href="../lib/bootstrap.css"/>
     <link rel="stylesheet" href="../assets/style.css"/>
+    <link rel="stylesheet" href="../lib/bootstrap.css"/>
+
     <!--<link rel="stylesheet" href="../assets/style.css"/>-->
     <title> Flappy Bird </title>
 
 
 </head>
 
-<body>
+<body background="../assets/NewYorkCity2.jpg">
 
 <div class="container">
     <div class="jumbotron">
 
-
-        <h1 id="fuchsia"> SUPERMAN<img width="70" align="right" src="../assets/flappy.png"/></h1>
-        <p>Welcome to the new flappy bird game!</p>
+        <h1 id="fuchsia"> Superman's New Adventure<img width="280" align="top-right" src="../assets/superman for header.jpg"/></h1>
+       <div id="welcome"> <p>Fly Superman through the Big Apple</p></div>
 
     </div>
 </div>
 
 <div id="greeting">
-    <form id="greeting-form" class="form-inline">
+    <h3>Save your score</h3>
+    <form id="greeting-form" class="form" method="post" action="/score">
         <div class="form-group">
-            <label for="fullName">Please enter your username?</label>
+            <label for="fullName">Please enter your name?</label>
             <input type="text" id="fullName"
-                   name="fullName" class="form-control" placeholder="Bob">
+                   name="fullName" class="form-control" placeholder="Superman" required>
+        <label for="email"> Please enter your email:</label>
+            <input type="email" id="email"
+                   name="email" class="form-control"
+                   placeholder="superman@email.com">
+
+            <input type="hidden" id="score" name="score" value="0">
         </div>
+
         <button class="btn btn-default" type="submit">OK</button>
     </form>
-</div>
+</form>
+    </div>
 
 
 
 <div id="game" align="center"> </div>
+
+
 <div id="league">
-    <p> League Table</p>
-    <ul>
-        <li class="gold">Kitty</li>
-        <li class="score">Emma</li>
-        <li class="score">Harry Potter</li>
+    <p> League Table:</p>
+    <ul id="scoreBoard">
     </ul>
 </div>
 
-
+<script src="../lib/jquery.js"></script>
+<script type="text/javascript" src="../lib/phaser.min.js"></script>
+<script type="text/javascript" src="../js/flappy.js"></script>
 
 </body>
 </html>
