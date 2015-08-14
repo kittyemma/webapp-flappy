@@ -18,6 +18,7 @@ app.post('/score', function(request, response){
     var email = request.body.email;
     var score = request.body.score;
 
+
     var database = csv.createCsvFileWriter("scores.csv", {"flags": "a"});
     var data = [name, email, score];
 
