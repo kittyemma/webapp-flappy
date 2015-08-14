@@ -30,6 +30,7 @@ var labelScore;
 var pipes = [];
 var lois = [];
 var lex = [];
+
 var superBadge = [];
 var waitingForEnter = true;
 var splashDisplay = [];
